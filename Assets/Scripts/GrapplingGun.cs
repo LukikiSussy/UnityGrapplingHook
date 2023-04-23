@@ -18,7 +18,7 @@ public class GrapplingGun : MonoBehaviour
     public SpringJoint2D springJoint;
     public Rigidbody2D playerRb;
 
-    [Header("Settings:")]
+    [Header("Settings (set maxDistance to 0 for unlimited distance):")]
     public float maxDistance;
     public float gunRotationSpeed;
 
