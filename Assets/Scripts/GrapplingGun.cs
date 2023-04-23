@@ -4,24 +4,32 @@ using UnityEngine;
 
 public class GrapplingGun : MonoBehaviour
 {
+    [Header("Grappling Rope Script Ref:")]
     public GrapplingRope grapplingRopeSc;
 
-    public Transform grapplingGunPivot;
-    public Camera mainCamera;
-    public SpringJoint2D springJoint;
+    [Header("Transform Ref:")]
     public Transform firePoint;
+    public Transform grapplingGunPivot;
+
+    [Header("Main Camera:")]
+    public Camera mainCamera;
+
+    [Header("Physics Ref:")]
+    public SpringJoint2D springJoint;
     public Rigidbody2D playerRb;
 
+    [Header("Settings:")]
+    public float maxDistance;
+    public float gunRotationSpeed;
 
+    [HideInInspector] public Vector3 distance;
+    [HideInInspector] public Vector3 grapplePoint;
+
+    Vector3 distanceToGrapplePoint;
     Vector3 mousePos;
     Vector3 currentPos;
-    public Vector3 distanceNorm;
-    public Vector3 distance;
-    public Vector3 grapplePoint;
-    Vector3 distanceToGrapplePoint;
+    Vector3 distanceNorm;
 
-    public float maxDistance;
-    public float rotationSpeed;
     bool shiftHeldDown = false;
 
     void Start()
@@ -67,7 +75,7 @@ public class GrapplingGun : MonoBehaviour
         else {
 
             float angle = Mathf.Atan2(distanceNorm.x, distanceNorm.y) * Mathf.Rad2Deg;
-            grapplingGunPivot.transform.rotation = Quaternion.Lerp(grapplingGunPivot.rotation, Quaternion.AngleAxis(-angle + 90, Vector3.forward), Time.deltaTime * rotationSpeed);
+            grapplingGunPivot.transform.rotation = Quaternion.Lerp(grapplingGunPivot.rotation, Quaternion.AngleAxis(-angle + 90, Vector3.forward), Time.deltaTime * gunRotationSpeed);
 
         }
     }
@@ -82,9 +90,7 @@ public class GrapplingGun : MonoBehaviour
 
                 if (Vector2.Distance(hit.point, firePoint.position) <= maxDistance || maxDistance == 0) {
                     grapplingRopeSc.enabled = true;
-                    grapplingRopeSc.DrawRope();
 
-                    grapplingRopeSc.lineRenderer.enabled = true;
                     grapplePoint = hit.point;
                     
                     springJoint.connectedAnchor = grapplePoint;
