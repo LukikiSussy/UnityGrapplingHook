@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class playerMovement : MonoBehaviour
 {
-    private float horizontal;
-    public float speed = 8f;
-    public float jumpPower = 16f;
+    [Header("Grappling Gun Script Ref:")]
+    [SerializeField] private GrapplingGun grappleSc;
 
+    [Header("Physics Ref:")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-    public GrapplingGun grappleSc;
+
+    [Header("Movement Settings:")]
+    [SerializeField] private float speed = 8f;
+    [SerializeField] private float jumpPower = 16f;
+
+
+    private float horizontal;
 
     void Update() {
 
