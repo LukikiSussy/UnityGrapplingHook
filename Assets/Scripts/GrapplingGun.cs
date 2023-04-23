@@ -88,7 +88,7 @@ public class GrapplingGun : MonoBehaviour
 
             if (hit.transform.gameObject.layer == 3) {
 
-                if (Vector2.Distance(hit.point, firePoint.position) <= maxDistance || maxDistance == 0) {
+                if (Vector2.Distance(hit.point, firePoint.position) <= maxDistance &&  Vector2.Distance(hit.point, firePoint.position) >= 1 || maxDistance == 0) {
                     grapplingRopeSc.enabled = true;
 
                     grapplePoint = hit.point;
