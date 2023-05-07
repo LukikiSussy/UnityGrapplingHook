@@ -19,64 +19,33 @@ public class playerMovement : MonoBehaviour
     [Header("Jump Settings:")]
     [SerializeField] private float canJumpAfterSeconds = 0.1f;
 
+    float groundedTimer;
+    float spacePressedTimer;
 
+    bool spaceIsBeingPressed = true;
 
     private float horizontal;
 
-    private bool canJumpNow;
-    private bool couldHaveJumped;
-
-    private bool spaceHeldNow;
-    private bool spaceHeldBefore;
-    private bool spaceHeld = true;
-
-    private bool JumpCoodown = true;
+    void Start() {
+        groundedTimer = canJumpAfterSeconds;
+        spacePressedTimer = canJumpAfterSeconds;
+    }
 
     void Update() {
 
-        Jump();
-
         horizontal = Input.GetAxisRaw("Horizontal");
+        UpdateTimers();
 
-        if (SpaceHeldDown() && CanJump() && spaceHeld && JumpCoodown) {
+        if (CanJump()) {
 
-            spaceHeld = false;
-            JumpCoodown = false;
-            StartCoroutine(JumpCooldownTimer());
+            groundedTimer = 0;
+            spacePressedTimer = 0;
+            spaceIsBeingPressed = false;
 
             rb.velocity = new Vector2(rb.velocity.x, jumpPower);
 
         }
 
-    }
-
-    IEnumerator hasJumped() {
-
-        bool grounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
-        bool spacePressed = Input.GetKey("space");
-        yield return new WaitForSeconds(canJumpAfterSeconds);
-
-        if (grounded) {
-
-            couldHaveJumped = true;
-
-        }
-        else {
-
-            couldHaveJumped = false;
-
-        }
-
-        if (spacePressed) {
-
-            spaceHeldBefore = true;
-
-        }
-        else {
-
-            spaceHeldBefore = false;
-
-        }
     }
 
     private void FixedUpdate() {
@@ -95,33 +64,26 @@ public class playerMovement : MonoBehaviour
 
     }
 
-    private void Jump() {
-
-        canJumpNow = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
-        spaceHeldNow = Input.GetKey("space");
-        if (Input.GetKeyDown("space")) {
-            spaceHeld = true;
-        }
-        StartCoroutine(hasJumped());
-
-    }
-
     private bool CanJump() {
-        if (canJumpNow || couldHaveJumped) {
+        if (groundedTimer > 0 && spacePressedTimer > 0 && spaceIsBeingPressed) {
             return true;
         }
         return false;
     }
 
-    private bool SpaceHeldDown() {
-        if (spaceHeldNow || spaceHeldBefore) {
-            return true;
-        }
-        return false;
-    }
+    private void UpdateTimers() {
 
-    IEnumerator JumpCooldownTimer() {
-        yield return new WaitForSeconds(canJumpAfterSeconds + 0.1f);
-        JumpCoodown = true;
+        groundedTimer -= Time.deltaTime;
+        spacePressedTimer -= Time.deltaTime;
+
+        if (Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer)) {
+            groundedTimer = canJumpAfterSeconds;
+        }
+        if (Input.GetKey("space")) {
+            spacePressedTimer = canJumpAfterSeconds;
+        }
+        if (Input.GetKeyDown("space")) {
+            spaceIsBeingPressed = true;
+        }
     }
 }
