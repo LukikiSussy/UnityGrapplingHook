@@ -22,7 +22,7 @@ public class GrapplingRope : MonoBehaviour
 
     float waveSize;
     float elapsed;
-    float moveTime = 0;
+    float moveTime;
     Vector3 currentPos;
 
     void Start()
@@ -74,9 +74,9 @@ public class GrapplingRope : MonoBehaviour
             for (int i = 0; i < percision; i++) {
 
                 float delta = i / (percision - 1f);
-                Vector2 offset = Vector2.Perpendicular(grapplingGunSc.distance).normalized * ropeAnimationCurve.Evaluate(delta) * waveSize;
-                Vector2 targetPos = Vector2.Lerp(grapplingGunSc.firePoint.transform.position, grapplingGunSc.grapplePoint, delta) + offset;
-                Vector2 currentPos = Vector2.Lerp(grapplingGunSc.firePoint.transform.position, targetPos, animationArc.Evaluate(moveTime) * animationSpeed);
+                Vector3 offset = Vector2.Perpendicular(grapplingGunSc.distance).normalized * ropeAnimationCurve.Evaluate(delta) * waveSize;
+                Vector3 targetPos = Vector3.Lerp(grapplingGunSc.firePoint.transform.position, grapplingGunSc.grapplePoint, delta) + offset;
+                Vector3 currentPos = Vector3.Lerp(grapplingGunSc.firePoint.transform.position, targetPos, animationArc.Evaluate(moveTime) * animationSpeed);
                 lineRenderer.SetPosition(i, currentPos);
 
             }

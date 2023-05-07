@@ -16,14 +16,33 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private float speed = 8f;
     [SerializeField] private float jumpPower = 16f;
 
+    [Header("Jump Settings:")]
+    [SerializeField] private float canJumpAfterSeconds = 0.1f;
+
+
 
     private float horizontal;
 
+    private bool canJumpNow;
+    private bool couldHaveJumped;
+
+    private bool spaceHeldNow;
+    private bool spaceHeldBefore;
+    private bool spaceHeld = true;
+
+    private bool JumpCoodown = true;
+
     void Update() {
+
+        Jump();
 
         horizontal = Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetButtonDown("Jump") && canJump()) {
+        if (SpaceHeldDown() && CanJump() && spaceHeld && JumpCoodown) {
+
+            spaceHeld = false;
+            JumpCoodown = false;
+            StartCoroutine(JumpCooldownTimer());
 
             rb.velocity = new Vector2(rb.velocity.x, jumpPower);
 
@@ -31,9 +50,38 @@ public class playerMovement : MonoBehaviour
 
     }
 
+    IEnumerator hasJumped() {
+
+        bool grounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        bool spacePressed = Input.GetKey("space");
+        yield return new WaitForSeconds(canJumpAfterSeconds);
+
+        if (grounded) {
+
+            couldHaveJumped = true;
+
+        }
+        else {
+
+            couldHaveJumped = false;
+
+        }
+
+        if (spacePressed) {
+
+            spaceHeldBefore = true;
+
+        }
+        else {
+
+            spaceHeldBefore = false;
+
+        }
+    }
+
     private void FixedUpdate() {
 
-        if (!grappleSc.grapplingRopeSc.lineRenderer.enabled && canJump()) {
+        if (!grappleSc.grapplingRopeSc.lineRenderer.enabled && CanJump()) {
             rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
         }
         else if (grappleSc.grapplingRopeSc.lineRenderer.enabled) {
@@ -47,9 +95,33 @@ public class playerMovement : MonoBehaviour
 
     }
 
-    private bool canJump() {
+    private void Jump() {
 
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        canJumpNow = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        spaceHeldNow = Input.GetKey("space");
+        if (Input.GetKeyDown("space")) {
+            spaceHeld = true;
+        }
+        StartCoroutine(hasJumped());
 
+    }
+
+    private bool CanJump() {
+        if (canJumpNow || couldHaveJumped) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool SpaceHeldDown() {
+        if (spaceHeldNow || spaceHeldBefore) {
+            return true;
+        }
+        return false;
+    }
+
+    IEnumerator JumpCooldownTimer() {
+        yield return new WaitForSeconds(canJumpAfterSeconds + 0.1f);
+        JumpCoodown = true;
     }
 }

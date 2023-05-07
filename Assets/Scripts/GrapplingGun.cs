@@ -54,7 +54,6 @@ public class GrapplingGun : MonoBehaviour
         }
         else {
 
-            grapplingRopeSc.lineRenderer.enabled = false;
             springJoint.enabled = false;
 
             shiftHeldDown = false;
@@ -92,6 +91,7 @@ public class GrapplingGun : MonoBehaviour
                     grapplingRopeSc.enabled = true;
 
                     grapplePoint = hit.point;
+                    grapplePoint.z = transform.position.z;
                     
                     springJoint.connectedAnchor = grapplePoint;
 
